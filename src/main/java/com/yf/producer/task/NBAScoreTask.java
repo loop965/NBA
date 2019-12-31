@@ -78,7 +78,9 @@ public class NBAScoreTask {
         }
         Scanner scanner = new Scanner(System.in);
         while (true){
+
             while (true){
+                getLiveList();
                 log.info("请输入比赛id 以enter键结束");
                 matchId = scanner.next();
                 if(matchMap.containsKey(matchId)){
@@ -126,6 +128,9 @@ public class NBAScoreTask {
                     String pidText = jsonObject.getString("pid_text").replace("\n"," ");
                     log.info("sid{} {}【{}:{}】{} {} {}",liveSid,hostTeam,homeScore,visitScore,visitTeam,liveText,periodCn);
                     Thread.sleep(1000);
+                }
+                if (("q").equals(exitCode)){
+                    break;
                 }
                 Thread.sleep(1000);
             }
