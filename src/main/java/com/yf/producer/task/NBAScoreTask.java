@@ -78,7 +78,7 @@ public class NBAScoreTask {
         }
         Scanner scanner = new Scanner(System.in);
         while (true){
-
+            // 获取要观看比赛id
             while (true){
                 getLiveList();
                 log.info("请输入比赛id 以enter键结束");
@@ -89,11 +89,11 @@ public class NBAScoreTask {
                     log.error("比赛id错误");
                 }
             }
-
+            // 另外开启一个线程监视退出指令
             ExistThread existThread = new ExistThread();
             Thread thread = new Thread(existThread);
             thread.start();
-
+            // 比赛内容
             JSONObject object = matchMap.get(matchId);
             String hostTeam = object.getString("home_team");
             String visitTeam = object.getString("visit_team");
@@ -129,6 +129,7 @@ public class NBAScoreTask {
                     log.info("sid{} {}【{}:{}】{} {} {}",liveSid,hostTeam,homeScore,visitScore,visitTeam,liveText,periodCn);
                     Thread.sleep(1000);
                 }
+                // 退出指令
                 if (("q").equals(exitCode)){
                     break;
                 }
