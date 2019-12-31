@@ -75,12 +75,15 @@ public class NBAScoreTask {
             log.info("暂时没有比赛");
             return;
         }
-        log.info("请输入比赛id 以enter键结束");
         Scanner scanner = new Scanner(System.in);
-        matchId = scanner.next();
-        if(!matchMap.containsKey(matchId)){
-            log.error("比赛id错误");
-            return;
+        while (true){
+            log.info("请输入比赛id 以enter键结束");
+            matchId = scanner.next();
+            if(matchMap.containsKey(matchId)){
+                break;
+            }else {
+                log.error("比赛id错误");
+            }
         }
         JSONObject object = matchMap.get(matchId);
         String hostTeam = object.getString("home_team");
@@ -119,6 +122,22 @@ public class NBAScoreTask {
             }
             Thread.sleep(1000);
         }
+    }
+
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String matchId = null;
+        while (true){
+            System.out.println("请输入比赛id");
+            matchId = scanner.next();
+            if ("100".equals(matchId)){
+                break;
+            }else {
+                log.error("比赛id错误");
+            }
+        }
+        System.out.println("matchId"+matchId);
     }
 
 }
