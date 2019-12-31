@@ -11,6 +11,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author: yf
@@ -91,8 +93,8 @@ public class NBAScoreTask {
             }
             // 另外开启一个线程监视退出指令
             ExistThread existThread = new ExistThread();
-            Thread thread = new Thread(existThread);
-            thread.start();
+            ExecutorService ex = Executors.newSingleThreadExecutor();
+            ex.execute(existThread);
             // 比赛内容
             JSONObject object = matchMap.get(matchId);
             String hostTeam = object.getString("home_team");
@@ -164,7 +166,6 @@ public class NBAScoreTask {
             while (true){
                 log.info("view game match id:{}",matchId);
                 Thread.sleep(2000);
-                log.info(exitCode);
                 if (("q").equals(exitCode)){
                     break;
                 }
