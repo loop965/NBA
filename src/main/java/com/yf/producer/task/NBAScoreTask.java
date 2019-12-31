@@ -24,6 +24,7 @@ public class NBAScoreTask {
     public static int maxSId = 0;
     private static String matchId = null;
     private static final String MATCH_TYPE = "basketball";
+    public static  String  exitCode = "";
 
 //   @Scheduled(fixedRate = 6000)
     public void getRealTimeScore(){
@@ -77,67 +78,96 @@ public class NBAScoreTask {
         }
         Scanner scanner = new Scanner(System.in);
         while (true){
-            log.info("请输入比赛id 以enter键结束");
-            matchId = scanner.next();
-            if(matchMap.containsKey(matchId)){
-                break;
-            }else {
-                log.error("比赛id错误");
-            }
-        }
-        JSONObject object = matchMap.get(matchId);
-        String hostTeam = object.getString("home_team");
-        String visitTeam = object.getString("visit_team");
-        String today =  DateFormatUtils.format(new Date(),"yyyy-MM-dd");
-        String maxIdUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/max_sid/"+matchId+"/0.htm";
-        while (true){
-            maxSId = Integer.parseInt(HttpClientUtil.sendGet(maxIdUrl));
-            if (lastMaxSid == maxSId){
-                continue;
-            }
-            // 比赛内容
-            String contentUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/livetext/"+matchId+"/0/lit_page_2/"+maxSId+".htm";
-            String contentResult = HttpClientUtil.sendGet(contentUrl);
-            if (StringUtils.isBlank(contentResult)){
-                continue;
-            }
-            JSONArray jsonArray = JSONArray.parseArray(contentResult);
-            for (int i = 0; i < jsonArray.size(); i++) {
-                String scoreUrl = "http://bifen4pc2.qiumibao.com/json/"+ today +"/"+matchId+".htm";
-                String scoreResult = HttpClientUtil.sendGet(scoreUrl);
-                String periodCn = "";
-                if (StringUtils.isNotBlank(scoreResult)){
-                    JSONObject detail = JSONObject.parseObject(scoreResult);
-                    periodCn = detail.getString("period_cn").replace("\n"," ");
+            while (true){
+                log.info("请输入比赛id 以enter键结束");
+                matchId = scanner.next();
+                if(matchMap.containsKey(matchId)){
+                    break;
+                }else {
+                    log.error("比赛id错误");
                 }
-                JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                String liveSid = jsonObject.getString("live_sid");
-                lastMaxSid = Integer.parseInt(liveSid);
-                String homeScore = jsonObject.getString("home_score");
-                String visitScore = jsonObject.getString("visit_score");
-                String liveText = jsonObject.getString("live_text");
-                String pidText = jsonObject.getString("pid_text").replace("\n"," ");
-                log.info("sid{} {}【{}:{}】{} {} {}",liveSid,hostTeam,homeScore,visitScore,visitTeam,liveText,periodCn);
+            }
+
+            ExistThread existThread = new ExistThread();
+            Thread thread = new Thread(existThread);
+            thread.start();
+
+            JSONObject object = matchMap.get(matchId);
+            String hostTeam = object.getString("home_team");
+            String visitTeam = object.getString("visit_team");
+            String today =  DateFormatUtils.format(new Date(),"yyyy-MM-dd");
+            String maxIdUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/max_sid/"+matchId+"/0.htm";
+            while (true){
+                maxSId = Integer.parseInt(HttpClientUtil.sendGet(maxIdUrl));
+                if (lastMaxSid == maxSId){
+                    continue;
+                }
+                // 比赛内容
+                String contentUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/livetext/"+matchId+"/0/lit_page_2/"+maxSId+".htm";
+                String contentResult = HttpClientUtil.sendGet(contentUrl);
+                if (StringUtils.isBlank(contentResult)){
+                    continue;
+                }
+                JSONArray jsonArray = JSONArray.parseArray(contentResult);
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    String scoreUrl = "http://bifen4pc2.qiumibao.com/json/"+ today +"/"+matchId+".htm";
+                    String scoreResult = HttpClientUtil.sendGet(scoreUrl);
+                    String periodCn = "";
+                    if (StringUtils.isNotBlank(scoreResult)){
+                        JSONObject detail = JSONObject.parseObject(scoreResult);
+                        periodCn = detail.getString("period_cn").replace("\n"," ");
+                    }
+                    JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                    String liveSid = jsonObject.getString("live_sid");
+                    lastMaxSid = Integer.parseInt(liveSid);
+                    String homeScore = jsonObject.getString("home_score");
+                    String visitScore = jsonObject.getString("visit_score");
+                    String liveText = jsonObject.getString("live_text");
+                    String pidText = jsonObject.getString("pid_text").replace("\n"," ");
+                    log.info("sid{} {}【{}:{}】{} {} {}",liveSid,hostTeam,homeScore,visitScore,visitTeam,liveText,periodCn);
+                    Thread.sleep(1000);
+                }
                 Thread.sleep(1000);
             }
-            Thread.sleep(1000);
         }
+
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
         String matchId = null;
+        Map<String,JSONObject> jsonObjectMap = new HashMap<>(16);
+        jsonObjectMap.put("100",new JSONObject());
+        jsonObjectMap.put("200",new JSONObject());
+        jsonObjectMap.put("300",new JSONObject());
         while (true){
-            System.out.println("请输入比赛id");
-            matchId = scanner.next();
-            if ("100".equals(matchId)){
-                break;
-            }else {
-                log.error("比赛id错误");
+            while (true){
+                System.out.println("请输入比赛id");
+                matchId = scanner.next();
+                if (jsonObjectMap.containsKey(matchId)){
+                    break;
+                }else {
+                    log.error("比赛id错误");
+                }
+            }
+            log.info("matchId:{}",matchId);
+            ExistThread existThread = new ExistThread();
+            Thread thread = new Thread(existThread);
+            thread.start();
+            while (true){
+                log.info("view game match id:{}",matchId);
+                Thread.sleep(2000);
+                log.info(exitCode);
+                if (("q").equals(exitCode)){
+                    break;
+                }
             }
         }
-        System.out.println("matchId"+matchId);
+
+
+
+
     }
 
 }
