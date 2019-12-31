@@ -30,20 +30,8 @@ public class NBAScoreTask {
 
     }
 
-    @Scheduled(fixedRate = 6000)
-    public void getMaxId() throws Exception{
-        log.info("getMaxId");
-        if (matchId != null){
-            String maxIdUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/max_sid/"+matchId+"/0.htm";
-            //
-            maxSId = Integer.parseInt(HttpClientUtil.sendGet(maxIdUrl));
-            log.info("getMaxSId:{}",maxSId);
-        }
 
-    }
-
-
-    public static Map<String,JSONObject> getLiveList(){
+    private Map<String,JSONObject> getLiveList(){
         Map<String,JSONObject> matchList = new HashMap<>();
         String url = "http://bifen4m.qiumibao.com/json/list.htm";
         String result = null;
@@ -80,7 +68,7 @@ public class NBAScoreTask {
     }
 
     @Scheduled(initialDelay = 1000 * 3, fixedDelay=Long.MAX_VALUE)
-    public static void watchMatch() throws Exception{
+    public void watchMatch() throws Exception{
         int lastMaxSid = 0;
         Map<String,JSONObject> matchMap = getLiveList();
         if (matchMap.size() == 0){
