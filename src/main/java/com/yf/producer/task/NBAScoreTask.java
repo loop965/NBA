@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonArray;
 import com.yf.producer.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ import java.util.*;
 @Slf4j
 public class NBAScoreTask {
 
-    private static int maxSId = 0;
+    public static int maxSId = 0;
     private static String matchId = null;
     private static final String MATCH_TYPE = "basketball";
 
@@ -30,12 +31,14 @@ public class NBAScoreTask {
 
     @Scheduled(fixedRate = 6000)
     public void getMaxId() throws Exception{
-        if (matchId == null){
-            return;
+        log.info("getMaxId");
+        if (matchId != null){
+            String maxIdUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/max_sid/"+matchId+"/0.htm";
+            //
+            maxSId = Integer.parseInt(HttpClientUtil.sendGet(maxIdUrl));
+            log.info("getMaxSId:{}",maxSId);
         }
-        String maxIdUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/max_sid/"+matchId+"/0.htm";
-        //
-        maxSId = Integer.parseInt(HttpClientUtil.sendGet(maxIdUrl));
+
     }
 
 
@@ -76,7 +79,7 @@ public class NBAScoreTask {
     }
 
     @Scheduled(initialDelay = 1000 * 3, fixedDelay=Long.MAX_VALUE)
-    public void watchMatch() throws Exception{
+    public static void watchMatch() throws Exception{
         int initMaxSid = 0;
         Map<String,JSONObject> matchMap = getLiveList();
         if (matchMap.size() == 0){
@@ -90,34 +93,46 @@ public class NBAScoreTask {
             log.error("比赛id错误");
             return;
         }
+        JSONObject object = matchMap.get(matchId);
+        String hostTeam = object.getString("home_team");
+        String visitTeam = object.getString("visit_team");
+//        GetMaxSidThread getMaxSidThread = new GetMaxSidThread(matchId);
+//        Thread thread = new Thread(getMaxSidThread);
+//        thread.start();
         String maxIdUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/max_sid/"+matchId+"/0.htm";
-        //
-        maxSId = Integer.parseInt(HttpClientUtil.sendGet(maxIdUrl));
-        while (initMaxSid < maxSId){
-            initMaxSid = maxSId;
+        while (true){
+            maxSId = Integer.parseInt(HttpClientUtil.sendGet(maxIdUrl));
+
+            if (initMaxSid == maxSId){
+                continue;
+            }
             // 比赛内容
             String contentUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/livetext/"+matchId+"/0/lit_page_2/"+maxSId+".htm";
             String contentResult = HttpClientUtil.sendGet(contentUrl);
+            if (StringUtils.isBlank(contentResult)){
+                continue;
+            }
             JSONArray jsonArray = JSONArray.parseArray(contentResult);
-            jsonArray.forEach(o -> {
-                JSONObject jsonObject = (JSONObject) o;
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                 String  liveSid = jsonObject.getString("live_sid");
-                if (Integer.parseInt(liveSid) < maxSId){
-                    return;
-                }
+                initMaxSid = Integer.parseInt(liveSid);
                 String homeScore = jsonObject.getString("home_score");
                 String visitScore = jsonObject.getString("visit_score");
                 String liveText = jsonObject.getString("live_text");
                 String pidText = jsonObject.getString("pid_text").replace("\n"," ");
-                log.info("比分【{}:{}】 {} {}",homeScore,visitScore,liveText,pidText);
-            });
+                log.info("sid{} {}【{}:{}】{} {} {}",liveSid,hostTeam,homeScore,visitScore,visitTeam,liveText,pidText);
+                Thread.sleep(500);
+            }
+            Thread.sleep(1000);
         }
     }
 
     public static void main(String[] args) throws Exception {
-
+        watchMatch();
+        GetMaxSidThread getMaxSidThread = new GetMaxSidThread(matchId);
+        Thread thread = new Thread(getMaxSidThread);
+        thread.start();
     }
-
-
 
 }
