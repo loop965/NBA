@@ -2,14 +2,12 @@ package com.yf.producer.task;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonArray;
 import com.yf.producer.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,7 +23,7 @@ public class NBAScoreTask {
 
     public static int maxSId = 0;
     private static String matchId = null;
-    private static final String MATCH_TYPE = "basketball";
+    private static final String MATCH_TYPE = "football";
     public static  String  exitCode = "";
 
 //   @Scheduled(fixedRate = 6000)
@@ -109,6 +107,11 @@ public class NBAScoreTask {
                 // 比赛内容
                 String contentUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/livetext/"+matchId+"/0/lit_page_2/"+maxSId+".htm";
                 String contentResult = HttpClientUtil.sendGet(contentUrl);
+                // 退出指令
+                if (("q").equals(exitCode)){
+                    log.info("退出当前比赛");
+                    break;
+                }
                 if (StringUtils.isBlank(contentResult)){
                     continue;
                 }
@@ -130,10 +133,6 @@ public class NBAScoreTask {
                     String pidText = jsonObject.getString("pid_text").replace("\n"," ");
                     log.info("sid{} {}【{}:{}】{} {} {}",liveSid,hostTeam,homeScore,visitScore,visitTeam,liveText,periodCn);
                     Thread.sleep(1000);
-                }
-                // 退出指令
-                if (("q").equals(exitCode)){
-                    break;
                 }
                 Thread.sleep(1000);
             }
@@ -161,8 +160,8 @@ public class NBAScoreTask {
             }
             log.info("matchId:{}",matchId);
             ExistThread existThread = new ExistThread();
-            Thread thread = new Thread(existThread);
-            thread.start();
+            ExecutorService ex = Executors.newSingleThreadExecutor();
+            ex.execute(existThread);
             while (true){
                 log.info("view game match id:{}",matchId);
                 Thread.sleep(2000);
