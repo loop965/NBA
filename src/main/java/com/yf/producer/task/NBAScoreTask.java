@@ -97,6 +97,8 @@ public class NBAScoreTask {
                 }
             }
             exitCode = "e";
+            lastMaxSid = 0;
+            log.info("============================ 比赛开始 =============================");
             // 另外开启一个线程监视退出指令
             ExistThread existThread = new ExistThread();
             ExecutorService ex = Executors.newSingleThreadExecutor();
@@ -110,7 +112,7 @@ public class NBAScoreTask {
             while (true){
                 // 退出指令
                 if (("q").equals(exitCode)){
-                    log.info("退出当前比赛");
+                    log.info("退出{}--{}比赛",hostTeam,visitTeam);
                     break;
                 }
                 maxSId = Integer.parseInt(HttpClientUtil.sendGet(maxIdUrl));
