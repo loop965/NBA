@@ -23,7 +23,7 @@ public class NBAScoreTask {
 
     public static int maxSId = 0;
     private static String matchId = null;
-    private static final String MATCH_TYPE = "football";
+    private static final String MATCH_TYPE = "basketball";
     public static  String  exitCode = "";
 
 //   @Scheduled(fixedRate = 6000)
@@ -32,7 +32,7 @@ public class NBAScoreTask {
     }
 
 
-    private Map<String,JSONObject> getLiveList(){
+    private Map<String,JSONObject> getLiveList(boolean flag){
         Map<String,JSONObject> matchList = new HashMap<>();
         String url = "http://bifen4m.qiumibao.com/json/list.htm";
         String result = null;
@@ -46,8 +46,10 @@ public class NBAScoreTask {
         }
         JSONObject resultObject = JSONObject.parseObject(result);
         JSONArray jsonArray = resultObject.getJSONArray("list");
-        log.info("==================================================================");
-        log.info("id       主队   比分       客队      时间          更新时间");
+        if (flag){
+            log.info("==================================================================");
+            log.info("id       主队   比分       客队      时间          更新时间");
+        }
         jsonArray.forEach(object ->{
             JSONObject jsonObject = (JSONObject) object;
             String type = jsonObject.getString("type");
@@ -61,17 +63,22 @@ public class NBAScoreTask {
             String visitScore = jsonObject.getString("visit_score");
             String updateTime = jsonObject.getString("update");
             String periodCn = jsonObject.getString("period_cn").replace("\n"," ");
-            log.info("{}   {}   {}：{}   {}    {}     {}",id,hostTeam,homeScore,visitScore,visitTeam,periodCn,updateTime);
+            if (flag){
+                log.info("{}   {}   {}：{}   {}    {}     {}",id,hostTeam,homeScore,visitScore,visitTeam,periodCn,updateTime);
+            }
             matchList.put(id,jsonObject);
         });
-        log.info("==================================================================");
+        if (flag){
+            log.info("==================================================================");
+        }
+
         return matchList;
     }
 
     @Scheduled(initialDelay = 1000 * 3, fixedDelay=Long.MAX_VALUE)
     public void watchMatch() throws Exception{
         int lastMaxSid = 0;
-        Map<String,JSONObject> matchMap = getLiveList();
+        Map<String,JSONObject> matchMap = getLiveList(false);
         if (matchMap.size() == 0){
             log.info("暂时没有比赛");
             return;
@@ -80,7 +87,7 @@ public class NBAScoreTask {
         while (true){
             // 获取要观看比赛id
             while (true){
-                getLiveList();
+                getLiveList(true);
                 log.info("请输入比赛id 以enter键结束");
                 matchId = scanner.next();
                 if(matchMap.containsKey(matchId)){
@@ -89,6 +96,7 @@ public class NBAScoreTask {
                     log.error("比赛id错误");
                 }
             }
+            exitCode = "e";
             // 另外开启一个线程监视退出指令
             ExistThread existThread = new ExistThread();
             ExecutorService ex = Executors.newSingleThreadExecutor();
@@ -100,6 +108,11 @@ public class NBAScoreTask {
             String today =  DateFormatUtils.format(new Date(),"yyyy-MM-dd");
             String maxIdUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/max_sid/"+matchId+"/0.htm";
             while (true){
+                // 退出指令
+                if (("q").equals(exitCode)){
+                    log.info("退出当前比赛");
+                    break;
+                }
                 maxSId = Integer.parseInt(HttpClientUtil.sendGet(maxIdUrl));
                 if (lastMaxSid == maxSId){
                     continue;
@@ -107,11 +120,7 @@ public class NBAScoreTask {
                 // 比赛内容
                 String contentUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/livetext/"+matchId+"/0/lit_page_2/"+maxSId+".htm";
                 String contentResult = HttpClientUtil.sendGet(contentUrl);
-                // 退出指令
-                if (("q").equals(exitCode)){
-                    log.info("退出当前比赛");
-                    break;
-                }
+
                 if (StringUtils.isBlank(contentResult)){
                     continue;
                 }
