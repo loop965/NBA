@@ -17,10 +17,17 @@ public class ExistThread implements Runnable {
     @SneakyThrows
     @Override
     public void run() {
-        NBAScoreTask.exitCode = "e";
-        Scanner existScanner = new Scanner(System.in);
-        NBAScoreTask.exitCode = existScanner.next();
-
+        while (true){
+            NBAScoreTask.exitCode = "e";
+            Scanner existScanner = new Scanner(System.in);
+            String code = existScanner.next();
+            if ("q".equals(code)){
+                NBAScoreTask.exitCode = code;
+                break;
+            }
+        }
     }
+
+
 
 }
