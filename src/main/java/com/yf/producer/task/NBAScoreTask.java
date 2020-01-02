@@ -32,7 +32,7 @@ public class NBAScoreTask {
     }
 
 
-    private Map<String,JSONObject> getLiveList(boolean flag){
+    private Map<String,JSONObject> getLiveList(){
         Map<String,JSONObject> matchList = new HashMap<>();
         String url = "http://bifen4m.qiumibao.com/json/list.htm";
         String result = null;
@@ -46,10 +46,8 @@ public class NBAScoreTask {
         }
         JSONObject resultObject = JSONObject.parseObject(result);
         JSONArray jsonArray = resultObject.getJSONArray("list");
-        if (flag){
-            log.info("==================================================================");
-            log.info("id       主队   比分       客队      时间          更新时间");
-        }
+        log.info("==================================================================");
+        log.info("id       主队   比分       客队      时间          更新时间");
         jsonArray.forEach(object ->{
             JSONObject jsonObject = (JSONObject) object;
             String type = jsonObject.getString("type");
@@ -63,31 +61,25 @@ public class NBAScoreTask {
             String visitScore = jsonObject.getString("visit_score");
             String updateTime = jsonObject.getString("update");
             String periodCn = jsonObject.getString("period_cn").replace("\n"," ");
-            if (flag){
-                log.info("{}   {}   {}：{}   {}    {}     {}",id,hostTeam,homeScore,visitScore,visitTeam,periodCn,updateTime);
-            }
+            log.info("{}   {}   {}：{}   {}    {}     {}",id,hostTeam,homeScore,visitScore,visitTeam,periodCn,updateTime);
             matchList.put(id,jsonObject);
         });
-        if (flag){
-            log.info("==================================================================");
-        }
-
+        log.info("==================================================================");
         return matchList;
     }
 
     @Scheduled(initialDelay = 1000 * 3, fixedDelay=Long.MAX_VALUE)
     public void watchMatch() throws Exception{
         int lastMaxSid = 0;
-        Map<String,JSONObject> matchMap = getLiveList(false);
-        if (matchMap.size() == 0){
-            log.info("暂时没有比赛");
-            return;
-        }
         Scanner scanner = new Scanner(System.in);
         while (true){
+            Map<String,JSONObject> matchMap = getLiveList();
+            if (matchMap.size() == 0){
+                log.info("暂时没有比赛");
+                return;
+            }
             // 获取要观看比赛id
             while (true){
-                getLiveList(true);
                 log.info("请输入比赛id 以enter键结束");
                 matchId = scanner.next();
                 if(matchMap.containsKey(matchId)){
@@ -122,7 +114,6 @@ public class NBAScoreTask {
                 // 比赛内容
                 String contentUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/livetext/"+matchId+"/0/lit_page_2/"+maxSId+".htm";
                 String contentResult = HttpClientUtil.sendGet(contentUrl);
-
                 if (StringUtils.isBlank(contentResult)){
                     continue;
                 }

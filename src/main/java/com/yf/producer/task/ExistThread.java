@@ -1,9 +1,7 @@
 package com.yf.producer.task;
 
-import com.yf.producer.util.HttpClientUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.Scanner;
 
 /**
