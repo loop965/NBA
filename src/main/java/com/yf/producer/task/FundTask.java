@@ -25,7 +25,7 @@ public class FundTask {
     /**
      * corn 秒 分 小时 天 月 周(1-7)
      */
-//    @Scheduled(cron = "0 0/2 9-14 * * 1-5")
+    @Scheduled(cron = "0 0/2 9-14 * * 1-5")
     public void getFound(){
         String[] jjCode = new String[]{"260108","162605","160632","519727","320007","001178"};
         log.info("=========================================================================");
