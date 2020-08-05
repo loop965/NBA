@@ -59,4 +59,10 @@ public class InsertBrdCustomerInfoThread implements Runnable {
         this.data = data;
     };
 
+
+    public static void main(String[] args) {
+        InsertBrdCustomerInfoThread insertBrdCustomerInfoThread = new InsertBrdCustomerInfoThread("");
+        Thread thread = new Thread(insertBrdCustomerInfoThread);
+        thread.start();
+    }
 }

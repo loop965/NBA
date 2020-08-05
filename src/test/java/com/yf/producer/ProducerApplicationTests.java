@@ -1,11 +1,10 @@
 package com.yf.producer;
 
 import com.alibaba.fastjson.JSONObject;
-import com.yf.producer.pojo.BrdCustomerInfo;
-import com.yf.producer.pojo.BrdProduct;
-import com.yf.producer.pojo.BrdProductStock;
-import com.yf.producer.pojo.Constant;
-import com.yf.producer.service.InsertDataService;
+import com.yf.producer.dao.modoo.InsertDataMapper;
+import com.yf.producer.dao.modoo.ModooMapper;
+import com.yf.producer.dao.tigerrose.TigerMapper;
+import com.yf.producer.pojo.BrdOrder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,8 +21,17 @@ class ProducerApplicationTests {
     @Autowired
     private RedisTemplate redisTemplate;
 
+//    @Autowired
+//    private InsertDataService selectDataService;
+//
     @Autowired
-    private InsertDataService selectDataService;
+    private InsertDataMapper dataMapper;
+
+    @Autowired
+    private ModooMapper modooMapper;
+
+    @Autowired
+    private TigerMapper tigerMapper;
 
     @Test
     void contextLoads() {
@@ -54,20 +62,19 @@ class ProducerApplicationTests {
 
         File file = new File("http://img3.imgtn.bdimg.com/it/u=1267490802,3326052181&fm=26&gp=0.jpg");
         System.out.println();
-
-
     }
 
     @Test
     void TestData(){
-//        BrdProduct newBrdProduct = selectDataService.selectBrdProduct("105808", Constant.TIGER_BID);
-//        BrdProductStock updateBrdProductStock = new BrdProductStock();
-//        updateBrdProductStock.setProductId("008c5c77-3108-4e51-b217-cd48ca4784e4");
-//        updateBrdProductStock.setSourceSid(newBrdProduct.getShopId());
-//        updateBrdProductStock.setStock(newBrdProduct.getInStock());
-//        updateBrdProductStock.setUpdateTime(newBrdProduct.getUpdateTime());
-//        updateBrdProductStock.setUpdateUser(newBrdProduct.getUpdateUser());
-//        selectDataService.updateBrdProductStock(updateBrdProductStock);
+        List<BrdOrder> orders = dataMapper.testOneToMore();
+        System.out.println(orders.size());
+    }
+
+    @Test
+    void testDataSource(){
+        String role1 = tigerMapper.selectRoleName();
+        String role = modooMapper.selectRoleName();
+        System.out.println(role);
     }
 
 }
