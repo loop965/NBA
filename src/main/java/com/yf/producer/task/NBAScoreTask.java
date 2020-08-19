@@ -67,7 +67,7 @@ public class NBAScoreTask {
         return matchList;
     }
 
-    @Scheduled(initialDelay = 1000 * 3, fixedDelay=Long.MAX_VALUE)
+//    @Scheduled(initialDelay = 1000 * 3, fixedDelay=Long.MAX_VALUE)
     public void watchMatch() throws Exception{
         int lastMaxSid = 0;
         Map<String,JSONObject> matchMap = getLiveList();
