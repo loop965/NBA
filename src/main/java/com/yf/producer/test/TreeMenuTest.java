@@ -6,6 +6,7 @@ import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,6 +16,11 @@ import java.util.List;
  */
 public class TreeMenuTest {
     public static void main(String[] args) {
+        Date date = new Date();
+        int i = date.compareTo(new Date());
+        System.out.println(i);
+
+
         // 构建node列表
         List<TreeNode<String>> nodeList = CollUtil.newArrayList();
 
