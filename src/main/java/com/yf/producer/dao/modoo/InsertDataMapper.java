@@ -1,4 +1,4 @@
-package com.yf.producer.dao;
+package com.yf.producer.dao.modoo;
 
 import com.yf.producer.pojo.*;
 import org.apache.ibatis.annotations.Param;
