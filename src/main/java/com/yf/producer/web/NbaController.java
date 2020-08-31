@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.yf.producer.entity.MatchVo;
 import com.yf.producer.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,6 +58,13 @@ public class NbaController {
         });
         return matchVoList;
 
+    }
+
+    @RequestMapping("match/watch/{id}")
+    public List<String> matchWatch(@PathVariable String id){
+        List<String> msgList = new ArrayList<>();
+        log.info(id);
+        return msgList;
     }
 
 
