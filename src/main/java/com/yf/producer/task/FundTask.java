@@ -2,11 +2,8 @@ package com.yf.producer.task;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yf.producer.pojo.Found;
-import com.yf.producer.service.InsertDataService;
 import com.yf.producer.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
@@ -19,15 +16,13 @@ import java.util.Arrays;
 @Slf4j
 public class FundTask {
 
-    @Autowired
-    private InsertDataService service;
 
     /**
      * corn 秒 分 小时 天 月 周(1-7)
      */
-    @Scheduled(cron = "0 0/2 9-14 * * 1-5")
+//    @Scheduled(cron = "0 0/2 9-14 * * 1-5")
     public void getFound(){
-        String[] jjCode = new String[]{"260108","162605","160632","519727","320007","001178"};
+        String[] jjCode = new String[]{"260108","162605","160632","519727","320007","001178","001617","001071","161725","001595","002682"};
         log.info("=========================================================================");
         log.info("当日净值  估算净值  估算涨跌百分比  估值时间          基金名称 ");
         Arrays.asList(jjCode).forEach(code ->{

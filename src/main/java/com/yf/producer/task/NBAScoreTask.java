@@ -71,6 +71,7 @@ public class NBAScoreTask {
     @Scheduled(initialDelay = 1000 * 3, fixedDelay=Long.MAX_VALUE)
     public void watchMatch() throws Exception{
         int lastMaxSid = 0;
+
         Scanner scanner = new Scanner(System.in);
         while (true){
             Map<String,JSONObject> matchMap = getLiveList();
@@ -118,22 +119,22 @@ public class NBAScoreTask {
                     continue;
                 }
                 JSONArray jsonArray = JSONArray.parseArray(contentResult);
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    String scoreUrl = "http://bifen4pc2.qiumibao.com/json/"+ today +"/"+matchId+".htm";
+                for (Object o : jsonArray) {
+                    String scoreUrl = "http://bifen4pc2.qiumibao.com/json/" + today + "/" + matchId + ".htm";
                     String scoreResult = HttpClientUtil.sendGet(scoreUrl);
                     String periodCn = "";
-                    if (StringUtils.isNotBlank(scoreResult)){
+                    if (StringUtils.isNotBlank(scoreResult)) {
                         JSONObject detail = JSONObject.parseObject(scoreResult);
-                        periodCn = detail.getString("period_cn").replace("\n"," ");
+                        periodCn = detail.getString("period_cn").replace("\n", " ");
                     }
-                    JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                    JSONObject jsonObject = (JSONObject) o;
                     String liveSid = jsonObject.getString("live_sid");
                     lastMaxSid = Integer.parseInt(liveSid);
                     String homeScore = jsonObject.getString("home_score");
                     String visitScore = jsonObject.getString("visit_score");
                     String liveText = jsonObject.getString("live_text");
-                    String pidText = jsonObject.getString("pid_text").replace("\n"," ");
-                    log.info("sid{} {}【{}:{}】{} {} {}",liveSid,hostTeam,homeScore,visitScore,visitTeam,liveText,periodCn);
+                    String pidText = jsonObject.getString("pid_text").replace("\n", " ");
+                    log.info("sid{} {}【{}:{}】{} {} {}", liveSid, hostTeam, homeScore, visitScore, visitTeam, liveText, periodCn);
                     Thread.sleep(1000);
                 }
                 Thread.sleep(1000);

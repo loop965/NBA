@@ -1,6 +1,6 @@
 package com.yf.producer.service;
 
-import com.yf.producer.dao.InsertDataMapper;
+import com.yf.producer.dao.modoo.InsertDataMapper;
 import com.yf.producer.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
