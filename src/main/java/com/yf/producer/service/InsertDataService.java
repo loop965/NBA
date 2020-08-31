@@ -125,4 +125,9 @@ public class InsertDataService {
     public void insertFound(Found found){
         dataMapper.insertFound(found);
     }
+
+    public String testIot(){
+        return dataMapper.testIot();
+    }
+
 }

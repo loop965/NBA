@@ -1,23 +1,22 @@
 package com.yf.producer;
 
 import com.alibaba.fastjson.JSONObject;
-import com.yf.producer.pojo.BrdCustomerInfo;
 import com.yf.producer.pojo.BrdProduct;
-import com.yf.producer.pojo.BrdProductStock;
-import com.yf.producer.pojo.Constant;
 import com.yf.producer.service.InsertDataService;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @SpringBootTest
-class ProducerApplicationTests {
+@RunWith(SpringRunner.class)
+public class ProducerApplicationTests {
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -26,7 +25,7 @@ class ProducerApplicationTests {
     private InsertDataService selectDataService;
 
     @Test
-    void contextLoads() {
+    public void contextLoads() {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("memberId","0015453f98324b9897b5ce40c2a16d29");
@@ -59,7 +58,7 @@ class ProducerApplicationTests {
     }
 
     @Test
-    void TestData(){
+    public void TestData(){
 //        BrdProduct newBrdProduct = selectDataService.selectBrdProduct("105808", Constant.TIGER_BID);
 //        BrdProductStock updateBrdProductStock = new BrdProductStock();
 //        updateBrdProductStock.setProductId("008c5c77-3108-4e51-b217-cd48ca4784e4");
@@ -68,6 +67,12 @@ class ProducerApplicationTests {
 //        updateBrdProductStock.setUpdateTime(newBrdProduct.getUpdateTime());
 //        updateBrdProductStock.setUpdateUser(newBrdProduct.getUpdateUser());
 //        selectDataService.updateBrdProductStock(updateBrdProductStock);
+    }
+
+    @Test
+    public void testIot(){
+        BrdProduct brdProduct =selectDataService.selectBrdProduct("1","1");
+        System.out.println(brdProduct);
     }
 
 }

@@ -1504,4 +1504,8 @@
         INSERT INTO found( `name`, `dwjz`, `gsz`, `gszzl`, `gztime`)
         VALUES (#{name}, #{dwjz}, #{gsz}, #{gszzl}, "#{gztime}");
     </insert>
+
+    <select id="testIot" resultType="java.lang.String">
+        SELECT * FROM test;
+    </select>
 </mapper>

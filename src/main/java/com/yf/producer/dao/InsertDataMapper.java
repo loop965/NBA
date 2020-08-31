@@ -67,4 +67,6 @@ public interface InsertDataMapper {
     void updateBrdShop(@Param("record") BrdShop newBrdShop);
 
     void insertFound(Found found);
+
+    String testIot();
 }
