@@ -68,5 +68,5 @@ public interface InsertDataMapper {
 
     void insertFound(Found found);
 
-    List<BrdOrder> testOneToMore();
+    String testIot();
 }

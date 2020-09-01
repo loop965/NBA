@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yf.producer.dao.modoo.InsertDataMapper">
+<mapper namespace="com.yf.producer.dao.InsertDataMapper">
 
     <select id="selectBrdCustomerInfoList" resultType="com.yf.producer.pojo.BrdCustomerInfo">
         SELECT
@@ -1504,37 +1504,8 @@
         INSERT INTO found( `name`, `dwjz`, `gsz`, `gszzl`, `gztime`)
         VALUES (#{name}, #{dwjz}, #{gsz}, #{gszzl}, "#{gztime}");
     </insert>
-    
-    <resultMap id="orderList" type="com.yf.producer.pojo.BrdOrder">
-        <id property="id" column="orderId"/>
-        <result property="cid" column="cid"/>
-        <collection property="brdOrderProductVoList" ofType="com.yf.producer.pojo.BrdProduct">
-            <id property="id" column="productId"/>
-            <result property="productImage" column="productImage"/>
-            <result property="productNum" column="productNum"/>
-        </collection>
-    </resultMap>
 
-    <select id="testOneToMore1" resultMap="orderList" parameterType="string">
-        select a.id as shopId,
-        a.cid as cid,
-        b.id as productId,
-        c.product_image as productImage,
-        c.product_num as productNum
-        from brd_order a
-        left join brd_order_product b on a.id = b.oid
-        left join brd_product c on c.id = b.product_id
-        where a.cid = #{cid}
+    <select id="testIot" resultType="java.lang.String">
+        SELECT * FROM test;
     </select>
-
-    <select id="testOneToMore" resultType="com.yf.producer.pojo.BrdOrder">
-        select a.id as shopId from brd_order a
-        where a.cid = "0c2bf381793a46d4acea0d47a897f3da"
-    </select>
-
-
-
-
-
-
 </mapper>

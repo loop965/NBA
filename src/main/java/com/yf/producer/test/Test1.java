@@ -1,13 +1,19 @@
 package com.yf.producer.test;
 
-import org.apache.commons.io.FileUtils;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.HashUtil;
+import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,45 +22,22 @@ import java.util.List;
  */
 public class Test1 {
     public static void main(String[] args) throws Exception {
+        List<String> stringList = new ArrayList<>();
 
-        File file = new File("C:\\Users\\Administrator\\.config\\clash\\logs\\2020-03-25-111357.log");
-        FileInputStream inputStream = new FileInputStream(file);
-//        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-//        String line;
-//        while ((line = br.readLine()) != null){
-//            System.out.println(line);
-//        }
-        FileOutputStream outputStream = new FileOutputStream(new File("C:\\Users\\Administrator\\.config\\clash\\logs\\test.log"));
-        byte[] buf = new byte[1024];
-        int byteRead;
-        while ((byteRead = inputStream.read(buf)) > 0){
-            System.out.println("dd");
-            outputStream.write(buf,0,byteRead);
-        }
-        outputStream.close();
-//        br.close();
-        inputStream.close();
-
-
-        int i = 30000;
-        List<Integer> list = new ArrayList<>();
-        long s1 = System.currentTimeMillis();
-        for (int t = 0; t < i; t++){
-            list.add(t);
-        }
-        long s2 = System.currentTimeMillis();
-        System.out.println(s2 - s1);
-        String beginTime = "2018-07-30 12:26:32";
-        String endTime = "2018-07-29 12:26:32";
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            Date date1 = format.parse(beginTime);
-            Date date2 = format.parse(endTime);
-            int compareTo = date1.compareTo(date2);
-            System.out.println(compareTo);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        int hash = HashUtil.apHash("test");
+        int hash1 = HashUtil.bkdrHash("test");
+        int hash2 = HashUtil.bkdrHash("test");
+        System.out.println(hash);
+        FileInputStream fileInputStream = new FileInputStream(new File("/Users/yangfei/Documents/HBuilderProjects/temp/data.json"));
+        List<String> lsit = IOUtils.readLines(fileInputStream);
+        String content = lsit.get(0);
+        JSONObject jsonObject = JSONObject.parseObject(content);
+        JSONArray jsonArray = jsonObject.getJSONArray("data");
+        jsonArray.forEach(e ->{
+            JSONObject object = (JSONObject) e;
+            stringList.add(object.getString("productnum"));
+        });
+        System.out.println();
 
 
     }
