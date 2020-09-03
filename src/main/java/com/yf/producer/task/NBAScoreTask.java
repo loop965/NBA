@@ -68,7 +68,7 @@ public class NBAScoreTask {
         return matchList;
     }
 
-//    @Scheduled(initialDelay = 1000 * 3, fixedDelay=Long.MAX_VALUE)
+    @Scheduled(initialDelay = 1000 * 3, fixedDelay=Long.MAX_VALUE)
     public void watchMatch() throws Exception{
         int lastMaxSid = 0;
 
@@ -108,7 +108,11 @@ public class NBAScoreTask {
                     log.info("退出{}--{}比赛",hostTeam,visitTeam);
                     break;
                 }
-                maxSId = Integer.parseInt(HttpClientUtil.sendGet(maxIdUrl));
+                String maxId = HttpClientUtil.sendGet(maxIdUrl);
+                if (StringUtils.isBlank(maxId)){
+                    continue;
+                }
+                maxSId = Integer.parseInt(maxId);
                 if (lastMaxSid == maxSId){
                     continue;
                 }

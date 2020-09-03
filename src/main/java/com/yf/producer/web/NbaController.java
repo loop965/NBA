@@ -5,11 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.yf.producer.entity.MatchVo;
 import com.yf.producer.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -61,10 +64,50 @@ public class NbaController {
     }
 
     @RequestMapping("match/watch/{id}")
-    public List<String> matchWatch(@PathVariable String id){
+    public JSONObject  matchWatch(@PathVariable String id, int lastMaxSid) throws InterruptedException {
+        JSONObject response = new JSONObject();
         List<String> msgList = new ArrayList<>();
+        String maxIdUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/max_sid/"+ id +"/0.htm";
         log.info(id);
-        return msgList;
+        String maxId = HttpClientUtil.sendGet(maxIdUrl);
+        if (StringUtils.isBlank(maxId)){
+            return response;
+        }
+        int maxSId = Integer.parseInt(maxId);
+        if (lastMaxSid == maxSId){
+            return response;
+        }
+        String contentUrl = "http://dingshi4pc.qiumibao.com/livetext/data/cache/livetext/"+id+"/0/lit_page_2/"+maxSId+".htm";
+        String contentResult = HttpClientUtil.sendGet(contentUrl);
+        if (StringUtils.isBlank(contentResult)){
+            return response;
+        }
+        JSONArray jsonArray = JSONArray.parseArray(contentResult);
+        String today =  DateFormatUtils.format(new Date(),"yyyy-MM-dd");
+        for (Object o : jsonArray) {
+            String scoreUrl = "http://bifen4pc2.qiumibao.com/json/" + today + "/" + id + ".htm";
+            String scoreResult = HttpClientUtil.sendGet(scoreUrl);
+            String periodCn = "";
+            if (StringUtils.isNotBlank(scoreResult)) {
+                JSONObject detail = JSONObject.parseObject(scoreResult);
+                periodCn = detail.getString("period_cn").replace("\n", " ");
+            }
+            JSONObject jsonObject = (JSONObject) o;
+            String liveSid = jsonObject.getString("live_sid");
+            lastMaxSid = Integer.parseInt(liveSid);
+            String homeScore = jsonObject.getString("home_score");
+            String visitScore = jsonObject.getString("visit_score");
+            String liveText = jsonObject.getString("live_text");
+            String pidText = jsonObject.getString("pid_text").replace("\n", " ");
+            StringBuilder sb = new StringBuilder();
+            sb.append(liveSid).append("【").append(homeScore).append(":").append(visitScore).append("】")
+                    .append(" ").append(liveText).append(" ").append(periodCn);
+            log.info("sid{} 【{}:{}】{} {}", liveSid,  homeScore, visitScore, liveText, periodCn);
+            msgList.add(sb.toString());
+        }
+        response.put("msgList",msgList);
+        response.put("lastMaxSid",lastMaxSid);
+        return response;
     }
 
 

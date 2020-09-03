@@ -34,7 +34,7 @@ public class HttpClientUtil {
     }
 
 
-    public static String sendGet(String url) throws Exception {
+    public static String sendGet(String url) {
 
         String result="";
         try {
