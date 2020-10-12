@@ -9,8 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MyConcurrentHashMap<k,v> extends ConcurrentHashMap {
     private static final long serialVersionUID = -6530364591743703165L;
-
-
+    private static final String v = "dd";
 
 
 
