@@ -1,5 +1,6 @@
 package com.yf.producer.task;
 
+import com.yf.producer.aspect.Time;
 import com.yf.producer.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,7 +22,7 @@ public class StockTask {
 
 //    @Scheduled(cron = "0/10 * 9-14 * * 1-5")
     public static void getStock(){
-        String[] codes = new String[]{"sh601633","sz002241","sh601688","sz000651","sh600519","sh603288"};
+        String[] codes = new String[]{"sh601633","sz002241","sh601688","sz000651","sh600519","sh603288","sz002456"};
         List<String> list = Arrays.asList(codes);
         log.info("===================================================================================================");
         log.info("股票名称   涨幅    最大涨幅   当前价格  昨日开盘价格 更新时间 ");

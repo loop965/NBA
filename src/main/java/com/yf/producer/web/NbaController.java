@@ -2,6 +2,7 @@ package com.yf.producer.web;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.yf.producer.aspect.Time;
 import com.yf.producer.entity.MatchVo;
 import com.yf.producer.util.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class NbaController {
 
 
     @RequestMapping(value = "match/list")
+    @Time
     public List<MatchVo> matchVoList(){
         List<MatchVo> matchVoList = new ArrayList<>();
         String url = "http://bifen4m.qiumibao.com/json/list.htm";

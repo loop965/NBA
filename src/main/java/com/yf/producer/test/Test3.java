@@ -25,6 +25,8 @@ public class Test3 {
 
     private static Set<String> stateSet = new HashSet<>();
 
+    private static final Set<String> ckSet = new HashSet<>();
+
 
     public static void main(String[] args){
         int pageNo = 1;
@@ -108,10 +110,18 @@ public class Test3 {
     }
 
     public static void parseGoodStockList(JSONArray goodStockList){
-        goodStockList.parallelStream().forEach(e -> {
+        goodStockList.forEach(e -> {
             JSONObject item = (JSONObject) e;
             String productId = item.getString("goods_id");
+            String sku = item.getString("sku");
             Integer sl = item.getInteger("sl");
+            log.info("{}",item);
+            if ("AIZ561000902".equals(sku)){
+                log.info("{}",item);
+            }
+            synchronized (ckSet){
+                ckSet.add(item.getString("ckmc"));
+            }
             if (sl > 0){
                 STOCK_MAP.put(productId,sl);
             }

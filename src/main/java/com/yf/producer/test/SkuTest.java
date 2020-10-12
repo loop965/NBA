@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class SkuTest {
     public static void main(String[] args) {
+        int cpu = Runtime.getRuntime().availableProcessors();
         int pageNo = 1;
         int pageSize = 10;
         String serviceType = "sku.list.get";
