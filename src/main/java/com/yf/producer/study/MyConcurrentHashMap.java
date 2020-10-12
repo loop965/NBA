@@ -10,6 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MyConcurrentHashMap<k,v> extends ConcurrentHashMap {
     private static final long serialVersionUID = -6530364591743703165L;
 
+    public static void main(String[] args) {
+        System.out.println("MyConcurrentHashMap");
+    }
+
 
 
 
