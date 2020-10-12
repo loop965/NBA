@@ -16,6 +16,7 @@ public class Test {
             int a = 2;
             int c = 3;
         }
+        System.out.println("dev");
         System.out.println(map.size());
     }
 
