@@ -17,5 +17,6 @@ public class SkuTest {
         String resultKey = "skuListGet";
         JSONObject parseResult = Test3.parseResult(result,resultKey);
         System.out.println(parseResult);
+        System.out.println();
     }
 }
