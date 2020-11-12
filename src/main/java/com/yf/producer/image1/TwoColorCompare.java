@@ -7,7 +7,7 @@ public class TwoColorCompare {
 
     public static void main(String[] args) {
         Integer[] color1 = new Integer[]{255, 255, 102};
-        Integer[] color2 = new Integer[]{255, 255, 102};
+        Integer[] color2 = new Integer[]{255, 255, 51};
         int r1 = 177;
         int g1 = 238;
         int b1 = 238;
