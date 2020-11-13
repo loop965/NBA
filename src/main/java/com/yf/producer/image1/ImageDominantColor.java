@@ -69,12 +69,12 @@ public class ImageDominantColor {
         }
 
         List<Map.Entry<Integer, Integer>> list1 = combineColor(list);
-        while (list1.size() > 100){
-            list1 = combineColor(list1);
-        }
-//        while (percent > 0.1){
+//        while (list1.size() > 100){
 //            list1 = combineColor(list1);
 //        }
+        while (percent > 0.1){
+            list1 = combineColor(list1);
+        }
 
 //        return "#" + Integer.toHexString(rgb[0])
 //                + Integer.toHexString(rgb[1])
@@ -136,10 +136,7 @@ public class ImageDominantColor {
 
     public static void main(String[] args) throws IOException {
 //        File file= new File("D:\\image\\tigerrose\\38880\\a8ac39fc20024453803afee2c35b3e0a.jpg");
-        File file= new File("E:\\download\\82ad76c27eae4c11814defb6f2265fea.jpg");
-        int a = 2;
-        double a1 = 6;
-        System.out.println(a/a1);
+        File file= new File("E:\\download\\0134416e05db4d368420a29dfd6511af.png");
         BufferedImage img = ImageIO.read(file);
         List<MyColor> colorList = getHexColor(img);
         CreateImageFileFromGraphicsObject.createImage(colorList,"");
