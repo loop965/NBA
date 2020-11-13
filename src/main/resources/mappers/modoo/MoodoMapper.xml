@@ -6,4 +6,13 @@
     <select id="selectRoleName" resultType="java.lang.String">
         select role from sys_role;
     </select>
+
+
+    <select id="selectBrdProductList" resultType="com.yf.producer.pojo.BrdProduct">
+        select sku_num as id, source_product_image as productImage
+        from brd_product_sku
+        where bid = '84ebd5740b204f3f9618ecbddc89548e' limit 20;
+    </select>
+
+
 </mapper>

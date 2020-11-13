@@ -1,10 +1,11 @@
 package com.yf.producer.image1;
 
+import java.awt.*;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -15,7 +16,12 @@ public class CreateImageFileFromGraphicsObject {
 
     public static void main(String[] args) throws IOException {
 
-        int width = 250*5;
+    }
+
+    public static void createImage(List<MyColor> colorList,String path) throws IOException {
+        int size = colorList.size();
+
+        int width = 250*size;
         int height = 250;
 
         // Constructs a BufferedImage of one of the predefined image types.
@@ -29,25 +35,27 @@ public class CreateImageFileFromGraphicsObject {
         g2d.setColor(Color.white);
         g2d.fillRect(0, 0, width, height);
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < size; i++) {
+            int[] rgb = colorList.get(i).getRgb();
+            String percent = colorList.get(i).getPercent();
             // create a circle with black
-            g2d.setColor(Color.black);
+            g2d.setColor(new Color(rgb[0],rgb[1],rgb[2]));
             g2d.fillOval(i * 250, 0, 250, height);
 
             // create a string with yellow
             g2d.setColor(Color.yellow);
-            g2d.drawString("Java Code Geeks", 50+i*250, 120);
+            g2d.drawString(percent, 115+i*250, 120);
         }
         // Disposes of this graphics context and releases any system resources that it is using.
         g2d.dispose();
 
         // Save as PNG
-        File file = new File("myimage.png");
+        File file = new File(path + "myimage1.png");
         ImageIO.write(bufferedImage, "png", file);
 
         // Save as JPEG
-        file = new File("myimage.jpg");
-        ImageIO.write(bufferedImage, "jpg", file);
+//        file = new File(path + "/myimage.jpg");
+//        ImageIO.write(bufferedImage, "jpg", file);
 
     }
 }

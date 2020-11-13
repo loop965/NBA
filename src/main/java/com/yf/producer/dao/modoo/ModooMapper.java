@@ -1,6 +1,9 @@
 package com.yf.producer.dao.modoo;
 
+import com.yf.producer.pojo.BrdProduct;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author: yf
@@ -11,4 +14,6 @@ import org.springframework.stereotype.Component;
 public interface ModooMapper {
 
     String selectRoleName();
+
+    List<BrdProduct> selectBrdProductList();
 }

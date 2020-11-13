@@ -1,8 +1,16 @@
 package com.yf.producer;
 
+import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSONObject;
+import com.yf.producer.dao.modoo.ModooMapper;
+import com.yf.producer.image1.ImageDominantColor;
+import com.yf.producer.image1.CreateImageFileFromGraphicsObject;
+import com.yf.producer.image1.MyColor;
 import com.yf.producer.pojo.BrdProduct;
 import com.yf.producer.service.InsertDataService;
+import com.yf.producer.util.HttpUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +18,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@Slf4j
 public class ProducerApplicationTests {
 
     @Autowired
@@ -23,6 +35,9 @@ public class ProducerApplicationTests {
 
     @Autowired
     private InsertDataService selectDataService;
+
+    @Autowired
+    private ModooMapper modooMapper;
 
     @Test
     public void contextLoads() {
@@ -73,6 +88,37 @@ public class ProducerApplicationTests {
     public void testIot(){
         BrdProduct brdProduct =selectDataService.selectBrdProduct("1","1");
         System.out.println(brdProduct);
+    }
+
+    @Test
+    public void colorTest(){
+        List<BrdProduct> productList = modooMapper.selectBrdProductList();
+        productList.forEach(brdProduct -> {
+            String id = brdProduct.getId();
+            String imagePath = brdProduct.getProductImage();
+            if (StringUtils.isBlank(imagePath)){
+                return;
+            }
+            String tempPath = "D:/modoo-image" + "/" + id;
+            File file = new File(tempPath);
+            if (!file.exists()){
+                boolean flag = file.mkdirs();
+                if (!flag){
+                    log.warn("创建文件夹失败tempPath={}",tempPath);
+                    return;
+                }
+            }
+            String picturePath = tempPath + "/" + UUID.fastUUID() + ".jpg";
+            File pictureFile = new File(picturePath);
+            try {
+                HttpUtil.downloadFile(imagePath,pictureFile);
+                BufferedImage img = ImageIO.read(pictureFile);
+                List<MyColor> colorList = ImageDominantColor.getHexColor(img);
+                CreateImageFileFromGraphicsObject.createImage(colorList,tempPath + "/");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 }
