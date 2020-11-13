@@ -26,7 +26,7 @@ public class CatTest {
             System.out.println(jsonObject.getString("catName"));
         });
         System.out.println(map);
-        getShop();
+//        getShop();
         getStyle();
         getSeason();
         getColor();

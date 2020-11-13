@@ -10,10 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.DigestUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.lang.System.*;
 
 /**
  * @author: yf
@@ -24,50 +28,75 @@ import java.util.concurrent.*;
 public class GetShopStock {
 
     private static  Map<Integer,Integer> COUNT_MAP ;
+    public static void getKu(){
+        long s2 = currentTimeMillis();
+        String serviceType = "getKc";
+        JSONObject params = new JSONObject();
+        params.put("pt_cangku_type",3);
+        JSONArray jsonArray = new JSONArray();
+        JSONObject kc_data = new JSONObject();
+        kc_data.put("spdm","S03C045");
+        jsonArray.add(kc_data);
+        params.put("kc_data",jsonArray);
+        String result = sendRequest(serviceType,params);
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        out.println(jsonObject);
+        JSONArray j = jsonObject.getJSONArray("data");
+        AtomicInteger count = new AtomicInteger();
+        j.forEach(e ->{
+            JSONObject object = (JSONObject) e;
+            String sku = object.getString("sku");
+            if (StringUtils.equals("920-8400202",sku)){
+                count.set(count.get() + object.getInteger("sl"));
+            }
+        });
+        long s21 = currentTimeMillis();
+        out.println(count.get());
+    }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-//        getKu();
+        getKu();
 
-        for (int j = 0; j < 5 ;j++) {
-            COUNT_MAP = new ConcurrentHashMap<>();
-            String filePath = "D:\\GitHub\\comyf\\producer\\src\\main\\java\\com\\yf\\producer\\test\\spdm.json";
-            String data1 =  FileUtils.readFileToString(new File(filePath));
-            List<String> list = (List<String>) JSONObject.parse(data1);
-            List<String> arrayList = new ArrayList<>(list);
-            Collections.sort(arrayList);
-            long s3 = System.currentTimeMillis();
-            String serviceType = "getKc";
-
-            int pageSize = 100;
-            int listSize = arrayList.size();
-            int count = listSize / pageSize ;
-            if (listSize % pageSize != 0) {
-                count++;
-            }
-            ExecutorService threadPoolTaskExecutor = Executors.newFixedThreadPool(13);
-            CountDownLatch countDownLatch = new CountDownLatch(count);
-            for (int i = 0; i < count; i++) {
-                int fromIndex = i * pageSize;
-                int toIndex = (i + 1) * pageSize;
-                if (toIndex > listSize) {
-                    toIndex = listSize;
-                }
-                List<String> subList = arrayList.subList(fromIndex, toIndex);
-                int finalI = i;
-                threadPoolTaskExecutor.execute(() -> {
-                    sendRequestGetShopStock(serviceType,subList, finalI);
-                    countDownLatch.countDown();
-                });
-            }
-            countDownLatch.await(7, TimeUnit.MINUTES);
-            log.info("COUNT_MAP:{},",JSONObject.toJSONString(COUNT_MAP));
-            FileUtil.appendString(JSONObject.toJSONString(COUNT_MAP),"D:\\GitHub\\comyf\\producer\\src\\main\\java\\com\\yf\\producer\\test\\data8.json","utf-8");
-            FileUtil.appendString("\n","D:\\GitHub\\comyf\\producer\\src\\main\\java\\com\\yf\\producer\\test\\data8.json","utf-8");
-            long s5 = System.currentTimeMillis();
-            log.info("aline拉取店铺库存total：{}s",(s5 - s3)/1000);
-            long s4 = System.currentTimeMillis();
-            log.info("同步aline店铺库存：{}s",(s4 - s3)/1000);
-        }
+//        for (int j = 0; j < 5 ;j++) {
+//            COUNT_MAP = new ConcurrentHashMap<>();
+//            String filePath = "D:\\GitHub\\comyf\\producer\\src\\main\\java\\com\\yf\\producer\\test\\spdm.json";
+//            String data1 =  FileUtils.readFileToString(new File(filePath));
+//            List<String> list = (List<String>) JSONObject.parse(data1);
+//            List<String> arrayList = new ArrayList<>(list);
+//            Collections.sort(arrayList);
+//            long s3 = System.currentTimeMillis();
+//            String serviceType = "getKc";
+//
+//            int pageSize = 100;
+//            int listSize = arrayList.size();
+//            int count = listSize / pageSize ;
+//            if (listSize % pageSize != 0) {
+//                count++;
+//            }
+//            ExecutorService threadPoolTaskExecutor = Executors.newFixedThreadPool(13);
+//            CountDownLatch countDownLatch = new CountDownLatch(count);
+//            for (int i = 0; i < count; i++) {
+//                int fromIndex = i * pageSize;
+//                int toIndex = (i + 1) * pageSize;
+//                if (toIndex > listSize) {
+//                    toIndex = listSize;
+//                }
+//                List<String> subList = arrayList.subList(fromIndex, toIndex);
+//                int finalI = i;
+//                threadPoolTaskExecutor.execute(() -> {
+//                    sendRequestGetShopStock(serviceType,subList, finalI);
+//                    countDownLatch.countDown();
+//                });
+//            }
+//            countDownLatch.await(7, TimeUnit.MINUTES);
+//            log.info("COUNT_MAP:{},",JSONObject.toJSONString(COUNT_MAP));
+//            FileUtil.appendString(JSONObject.toJSONString(COUNT_MAP),"D:\\GitHub\\comyf\\producer\\src\\main\\java\\com\\yf\\producer\\test\\data8.json","utf-8");
+//            FileUtil.appendString("\n","D:\\GitHub\\comyf\\producer\\src\\main\\java\\com\\yf\\producer\\test\\data8.json","utf-8");
+//            long s5 = System.currentTimeMillis();
+//            log.info("aline拉取店铺库存total：{}s",(s5 - s3)/1000);
+//            long s4 = System.currentTimeMillis();
+//            log.info("同步aline店铺库存：{}s",(s4 - s3)/1000);
+//        }
     }
 
 
@@ -110,9 +139,9 @@ public class GetShopStock {
             jsonArray.add(kcData);
         });
         params.put("kc_data",jsonArray);
-        long s1 = System.currentTimeMillis();
+        long s1 = currentTimeMillis();
         String result = BaiSonRequestUtil.sendRequestWithParams(serviceType,params);
-        long s2 = System.currentTimeMillis();
+        long s2 = currentTimeMillis();
         log.info("第{}次查询店铺库存：{}ms", finalI,(s2 - s1));
         if (StringUtils.isBlank(result)){
             log.warn("第{}次查询店铺库存结果为空：{}", finalI,result);
@@ -170,7 +199,7 @@ public class GetShopStock {
 //        params.put("sku","PM1900500302");
         String result = sendRequest(serviceType,params);
         JSONObject jsonObject = JSONObject.parseObject(result);
-        System.out.println(jsonObject);
+        out.println(jsonObject);
         return result;
     }
 
@@ -189,32 +218,6 @@ public class GetShopStock {
     }
 
 
-    public static void getKu(){
-        long s2 = System.currentTimeMillis();
-        String serviceType = "getKc";
-        JSONObject params = new JSONObject();
-        params.put("pt_cangku_type",3);
-        JSONArray jsonArray = new JSONArray();
-        JSONObject kc_data = new JSONObject();
-        // AIZ561000902  PM1900500302
-//        kc_data.put("sku","AIC830100201");
-//        kc_data.put("ckdm","A007");
-        kc_data.put("spdm","Z142615");
-        JSONObject kc_data1 = new JSONObject();
-        // AIZ561000902  PM1900500302
-//        kc_data.put("sku","AIC830100201");
-//        kc_data1.put("ckdm","A003");
-        kc_data1.put("spdm","PM19005");
-//        kc_data.put("ckdm","A003");
-//        kc_data.put("ckdm","A003");
-        jsonArray.add(kc_data);
-        jsonArray.add(kc_data1);
-        params.put("kc_data",jsonArray);
-        String result = sendRequest(serviceType,params);
-        JSONObject jsonObject = JSONObject.parseObject(result);
-        System.out.println(jsonObject);
-        long s21 = System.currentTimeMillis();
-        System.out.println(s21-s2);
-    }
+
 
 }
