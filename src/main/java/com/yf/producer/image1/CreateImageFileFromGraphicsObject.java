@@ -18,10 +18,10 @@ public class CreateImageFileFromGraphicsObject {
 
     }
 
-    public static void createImage(List<MyColor> colorList,String path) throws IOException {
+    public static void createImage(List<MyColor> colorList,String path,BufferedImage img) throws IOException {
         int size = colorList.size();
 
-        int width = 200 * size;
+        int width = 200 * (size+1);
         int height = 250;
 
         // Constructs a BufferedImage of one of the predefined image types.
@@ -30,22 +30,23 @@ public class CreateImageFileFromGraphicsObject {
         // Create a graphics which can be used to draw into the buffered image
         Graphics2D g2d = bufferedImage.createGraphics();
 
-
         // fill all the image with white
         g2d.setColor(Color.lightGray);
 //        g2d.setComposite(AlphaComposite.Clear);
         g2d.fillRect(0, 0, width, height);
+//        g2d.drawImage(img,0,0,200,250,null);
 
-        for (int i = 0; i < size; i++) {
+
+        for (int i = 0;i < size; i++) {
             int[] rgb = colorList.get(i).getRgb();
             String percent = colorList.get(i).getPercent();
             // create a circle with black
             g2d.setColor(new Color(rgb[0],rgb[1],rgb[2]));
-            g2d.fillOval(i * 200, 0, 200, 200);
+            g2d.fillOval((i+1) * 200, 0, 200, 200);
 
             // create a string with yellow
             g2d.setColor(Color.red);
-            g2d.drawString(percent, 85 + i * 200, 225);
+            g2d.drawString(percent, 85 + (i + 1)* 200, 225);
         }
         // Disposes of this graphics context and releases any system resources that it is using.
         g2d.dispose();

@@ -114,7 +114,7 @@ public class ProducerApplicationTests {
                 HttpUtil.downloadFile(imagePath,pictureFile);
                 BufferedImage img = ImageIO.read(pictureFile);
                 List<MyColor> colorList = ImageDominantColor.getHexColor(img);
-                CreateImageFileFromGraphicsObject.createImage(colorList,tempPath + "/");
+                CreateImageFileFromGraphicsObject.createImage(colorList,tempPath + "/",img);
             } catch (Exception e) {
                 e.printStackTrace();
             }

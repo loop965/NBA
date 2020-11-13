@@ -30,9 +30,8 @@ public class ImageDominantColor {
         Map<Integer, Integer> colorMap = new HashMap<>(16);
         int height = image.getHeight();
         int width = image.getWidth();
-        System.out.println("height"+height +",width" + width);
-        multi = height*width;
-        System.out.println("width*height="+multi);
+        multi = height * width;
+       log.info("width:{},height:{},multi:{}",width,height,multi);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 int rgb = image.getRGB(i, j);
@@ -61,11 +60,10 @@ public class ImageDominantColor {
             Map.Entry<Integer, Integer> entry = list.get(i);
             rgb = getRGBArr(entry.getKey());
             int count = entry.getValue();
-            System.out.println("k:"+ rgb[0] + "," + rgb[1] + "," +rgb[2] +",v:" + count);
-            String rgb1 = "#" + Integer.toHexString(rgb[0])
+            String hex = "#" + Integer.toHexString(rgb[0])
                     + Integer.toHexString(rgb[1])
                     + Integer.toHexString(rgb[2]);
-            System.out.println(rgb1);
+            log.info("hex:{},rgb:{}",hex,rgb);
         }
 
         List<Map.Entry<Integer, Integer>> list1 = combineColor(list);
@@ -94,7 +92,7 @@ public class ImageDominantColor {
                 int[] rgb2 = getRGBArr(entry2.getKey());
 //                double p = TwoColorCompare.compareColors1(rgb1,rgb2);
                 double p1 = TwoColorCompare.delta(TwoColorCompare.rgbToLab(rgb1),TwoColorCompare.rgbToLab(rgb2));
-                if (p1 < 20){
+                if (p1 < 10){
                     sum +=entry2.getValue();
                 }else {
                     list1.add(entry2);
@@ -136,10 +134,10 @@ public class ImageDominantColor {
 
     public static void main(String[] args) throws IOException {
 //        File file= new File("D:\\image\\tigerrose\\38880\\a8ac39fc20024453803afee2c35b3e0a.jpg");
-        File file= new File("E:\\download\\0134416e05db4d368420a29dfd6511af.png");
+        File file= new File("D:\\modoo-image\\TR180680OC112549D-PP11-12\\cee9ceb7-9d7a-499f-8f23-168cccf8ee10.jpg");
         BufferedImage img = ImageIO.read(file);
         List<MyColor> colorList = getHexColor(img);
-        CreateImageFileFromGraphicsObject.createImage(colorList,"");
-        System.out.println(colorList);
+        CreateImageFileFromGraphicsObject.createImage(colorList,"",img);
+        log.info("colorList:{}",colorList);
     }
 }
