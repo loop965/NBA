@@ -244,21 +244,20 @@ public class TwoColorCompare {
     }
 
     public static double calculateDeltaE(double[] lab1, double[] lab2) {
-
-        double L1 = lab1[0];
+        double l1 = lab1[0];
         double a1 = lab1[1];
         double b1 = lab1[2];
-        double L2 = lab2[0];
+        double l2 = lab2[0];
         double a2 = lab2[1];
         double b2 = lab2[2];
-        double Lmean = (L1 + L2) / 2.0;
-        double C1 =  Math.sqrt(a1*a1 + b1*b1);
-        double C2 =  Math.sqrt(a2*a2 + b2*b2);
-        double Cmean = (C1 + C2) / 2.0;
+        double Lmean = (l1 + l2) / 2.0;
+        double c1 =  Math.sqrt(a1*a1 + b1*b1);
+        double c2 =  Math.sqrt(a2*a2 + b2*b2);
+        double Cmean = (c1 + c2) / 2.0;
 
         double G =  ( 1 - Math.sqrt( Math.pow(Cmean, 7) / (Math.pow(Cmean, 7) + Math.pow(25, 7)) ) ) / 2;
         double a1prime = a1 * (1 + G);
-        double a2prime = a2 * (1 + G); 
+        double a2prime = a2 * (1 + G);
 
         double C1prime =  Math.sqrt(a1prime*a1prime + b1*b1); 
         double C2prime =  Math.sqrt(a2prime*a2prime + b2*b2); 
@@ -272,10 +271,10 @@ public class TwoColorCompare {
 
         double deltahprime =  ((Math.abs(h1prime - h2prime) <= Math.PI) ? h2prime - h1prime : (h2prime <= h1prime) ? h2prime - h1prime + 2*Math.PI : h2prime - h1prime - 2*Math.PI); 
 
-        double deltaLprime = L2 - L1; 
+        double deltaLprime = l2 - l1;
         double deltaCprime = C2prime - C1prime; 
         double deltaHprime =  2.0 * Math.sqrt(C1prime*C2prime) * Math.sin(deltahprime / 2.0); 
-        double SL =  1.0 + ( (0.015*(Lmean - 50)*(Lmean - 50)) / (Math.sqrt( 20 + (Lmean - 50)*(Lmean - 50) )) ); 
+        double SL =  1.0 + ( (0.015*(Lmean - 50)*(Lmean - 50)) / (Math.sqrt( 20 + (Lmean - 50)*(Lmean - 50) )) );
         double SC =  1.0 + 0.045 * Cmeanprime; 
         double SH =  1.0 + 0.015 * Cmeanprime * T; 
 
