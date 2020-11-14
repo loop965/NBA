@@ -134,7 +134,8 @@ public class ImageDominantColor {
 
     public static void main(String[] args) throws IOException {
 //        File file= new File("D:\\image\\tigerrose\\38880\\a8ac39fc20024453803afee2c35b3e0a.jpg");
-        File file= new File("D:\\modoo-image\\TR180680OC112549D-PP11-12\\cee9ceb7-9d7a-499f-8f23-168cccf8ee10.jpg");
+        // rembg -o /Users/yangfei/Downloads/rBOXPV4G8TiAfl4HABHI3JC4QGc528-removebg-preview.png /Users/yangfei/Downloads/rBOXPV4G8TiAfl4HABHI3JC4QGc528-removebg-preview111.png
+        File file= new File("/Users/yangfei/Downloads/rBOXPV4G8TiAfl4HABHI3JC4QGc528-removebg-preview.png");
         BufferedImage img = ImageIO.read(file);
         List<MyColor> colorList = getHexColor(img);
         CreateImageFileFromGraphicsObject.createImage(colorList,"",img);
