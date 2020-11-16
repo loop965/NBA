@@ -90,7 +90,7 @@ public class ProducerApplicationTests {
         System.out.println(brdProduct);
     }
 
-    @Test
+//    @Test
     public void colorTest(){
         List<BrdProduct> productList = modooMapper.selectBrdProductList();
         productList.forEach(brdProduct -> {

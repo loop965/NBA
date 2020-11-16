@@ -22,8 +22,8 @@ public class TwoColorCompare {
      */
     public static void main(String[] args) {
         int[] lab = new int[3];
-        int[] color1 = new int[]{233,233,23};
-        int[] color2 = new int[]{243,253,0};
+        int[] color1 = new int[]{125,103,89};
+        int[] color2 = new int[]{199,169,158};
 //        compareColors(r1,g1,b1,r2,g2,b2);
         double p = compareColors1(color1,color2);
         log.info("percent:{}",p);
@@ -31,12 +31,12 @@ public class TwoColorCompare {
         double[] lab2 = rgbToLab(color2);
         double delta = delta(lab1,lab2);
         double delta94 = delta94(lab1,lab2);
-        double delta200 = calculateDeltaE(lab1,lab2);
+        double deltaE2000 = calculateDeltaE2000(lab1,lab2);
         log.info("lab1:{}",lab1);
         log.info("lab2:{}",lab2);
         log.info("delta: {}",delta);
         log.info("delta94: {}",delta94);
-        log.info("delta200: {}",delta200);
+        log.info("deltaE2000: {}",deltaE2000);
 
 
     }
@@ -243,7 +243,7 @@ public class TwoColorCompare {
         return Math.sqrt(Math.pow(l1-l2,2) + Math.pow(a1-a2,2) + Math.pow(b1-b2,2));
     }
 
-    public static double calculateDeltaE(double[] lab1, double[] lab2) {
+    public static double calculateDeltaE2000(double[] lab1, double[] lab2) {
         double l1 = lab1[0];
         double a1 = lab1[1];
         double b1 = lab1[2];

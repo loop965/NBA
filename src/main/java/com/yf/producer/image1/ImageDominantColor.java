@@ -1,8 +1,5 @@
 package com.yf.producer.image1;
 
-import com.yf.producer.image1.CreateImageFileFromGraphicsObject;
-import com.yf.producer.image1.MyColor;
-import com.yf.producer.image1.TwoColorCompare;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
@@ -10,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author jittagornp
@@ -24,6 +22,7 @@ public class ImageDominantColor {
     private static double multi = 0;
     private static double percent = 0;
     private static List<MyColor> myColorList = new ArrayList<>();
+    private static int de = 0;
 
     public static List<MyColor> getHexColor(BufferedImage image) {
         myColorList = new ArrayList<>();
@@ -35,15 +34,16 @@ public class ImageDominantColor {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 int rgb = image.getRGB(i, j);
-//                if (!isGray(getRGBArr(rgb))) {
-                    Integer counter = colorMap.get(rgb);
-                    if (counter == null) {
+//                if (rgb == 0){
+//                    de++;
+//                    continue;
+//                }
+                Integer counter = colorMap.get(rgb);
+                if (counter == null) {
                         counter = 0;
-                    }
-
-                    colorMap.put(rgb, ++counter);
                 }
-//            }
+                colorMap.put(rgb, ++counter);
+            }
         }
 
         return getMostCommonColor(colorMap);
@@ -55,7 +55,7 @@ public class ImageDominantColor {
         Collections.sort(list, (Map.Entry<Integer, Integer> obj1, Map.Entry<Integer, Integer> obj2)
                 -> ((Comparable) obj2.getValue()).compareTo(obj1.getValue()));
 
-        int[] rgb = new int[0];
+        int[] rgb;
         for (int i = 1; i < 5 ; i++) {
             Map.Entry<Integer, Integer> entry = list.get(i);
             rgb = getRGBArr(entry.getKey());
@@ -67,43 +67,41 @@ public class ImageDominantColor {
         }
 
         List<Map.Entry<Integer, Integer>> list1 = combineColor(list);
-//        while (list1.size() > 100){
-//            list1 = combineColor(list1);
-//        }
-        while (percent > 0.1){
+        while (list1.size() > 1){
             list1 = combineColor(list1);
         }
-
-//        return "#" + Integer.toHexString(rgb[0])
-//                + Integer.toHexString(rgb[1])
-//                + Integer.toHexString(rgb[2]);
-
+//        while (percent > 0.1){
+//            list1 = combineColor(list1);
+//        }
         return myColorList;
     }
 
     public static List<Map.Entry<Integer, Integer>> combineColor(List<Map.Entry<Integer, Integer>> list){
         List<Map.Entry<Integer, Integer>> list1 = new ArrayList<>();
         for (int i = 0; i < 1; i++) {
-            Map.Entry<Integer, Integer> entry1 = list.get(i);
-            int[] rgb1 = getRGBArr(entry1.getKey());
-            int sum = entry1.getValue();
+            Map.Entry<Integer, Integer> preEntry = list.get(i);
+            int[] rgb1 = getRGBArr(preEntry.getKey());
+            int sum = preEntry.getValue();
             for (int j = i+1; j < list.size(); j++) {
-                Map.Entry<Integer, Integer> entry2 = list.get(j);
-                int[] rgb2 = getRGBArr(entry2.getKey());
-//                double p = TwoColorCompare.compareColors1(rgb1,rgb2);
-                double p1 = TwoColorCompare.delta(TwoColorCompare.rgbToLab(rgb1),TwoColorCompare.rgbToLab(rgb2));
-                if (p1 < 10){
-                    sum +=entry2.getValue();
-                }else {
-                    list1.add(entry2);
+                Map.Entry<Integer, Integer> nextEntry = list.get(j);
+                int[] rgb2 = getRGBArr(nextEntry.getKey());
+                double deltaE = TwoColorCompare.calculateDeltaE2000(TwoColorCompare.rgbToLab(rgb1),TwoColorCompare.rgbToLab(rgb2));
+                if (deltaE < 21){
+                    sum += nextEntry.getValue();
+                } else {
+                    list1.add(nextEntry);
                 }
             }
-            entry1.setValue(sum);
-            percent = sum/multi;
+            preEntry.setValue(sum);
+            percent = sum / (multi-de);
+            if (percent < 0.001){
+                continue;
+            }
             String percentStr = (percent*100+"").substring(0,4)+"%";
             log.info("rgb1:{} percent:{}",rgb1,percentStr);
             MyColor myColor = new MyColor();
-            myColor.setPercent(percentStr);
+            myColor.setPercentStr(percentStr);
+            myColor.setPercent(Double.parseDouble((percent*100+"").substring(0,4)));
             myColor.setRgb(rgb1);
             myColorList.add(myColor);
         }
@@ -133,12 +131,15 @@ public class ImageDominantColor {
     }
 
     public static void main(String[] args) throws IOException {
-//        File file= new File("D:\\image\\tigerrose\\38880\\a8ac39fc20024453803afee2c35b3e0a.jpg");
-        // rembg -o /Users/yangfei/Downloads/rBOXPV4G8TiAfl4HABHI3JC4QGc528-removebg-preview.png /Users/yangfei/Downloads/rBOXPV4G8TiAfl4HABHI3JC4QGc528-removebg-preview111.png
-        File file= new File("/Users/yangfei/Downloads/rBOXPV4G8TiAfl4HABHI3JC4QGc528-removebg-preview.png");
+        File file= new File("D:\\modoo-image\\TR170650OC111738D-RR17-12\\0f489289-9184-4f10-98c2-eeeef5d40e13.out.png");
+//        File file= new File("D:\\modoo-image\\TR190129TS113198A-YG12-12\\827636e1-138f-46a9-927d-0041dff99a98.out.png");
         BufferedImage img = ImageIO.read(file);
         List<MyColor> colorList = getHexColor(img);
+        colorList.sort(Comparator.comparing(MyColor::getPercent).reversed());
         CreateImageFileFromGraphicsObject.createImage(colorList,"",img);
+
         log.info("colorList:{}",colorList);
+        log.info("del:{}",de);
+        log.info("sum:{}",colorList.stream().mapToDouble(MyColor::getPercent).sum());
     }
 }

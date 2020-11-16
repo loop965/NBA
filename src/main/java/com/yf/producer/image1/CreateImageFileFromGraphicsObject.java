@@ -39,7 +39,7 @@ public class CreateImageFileFromGraphicsObject {
 
         for (int i = 0;i < size; i++) {
             int[] rgb = colorList.get(i).getRgb();
-            String percent = colorList.get(i).getPercent();
+            String percent = colorList.get(i).getPercentStr();
             // create a circle with black
             g2d.setColor(new Color(rgb[0],rgb[1],rgb[2]));
             g2d.fillOval((i+1) * 200, 0, 200, 200);
@@ -52,7 +52,7 @@ public class CreateImageFileFromGraphicsObject {
         g2d.dispose();
 
         // Save as PNG
-        File file = new File(path + "myimage1.png");
+        File file = new File(path + "myimage6.png");
         ImageIO.write(bufferedImage, "png", file);
 
         // Save as JPEG

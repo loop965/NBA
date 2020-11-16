@@ -1,15 +1,21 @@
 package com.yf.producer.image1;
 
+import lombok.ToString;
+
 /**
  * @author: yf
  * @date: 2020/11/13  10:55
  * @desc:
  */
+
+@ToString
 public class MyColor {
 
     private int[] rgb;
 
-    private String percent;
+    private String percentStr;
+
+    private double percent;
 
     public int[] getRgb() {
         return rgb;
@@ -19,11 +25,19 @@ public class MyColor {
         this.rgb = rgb;
     }
 
-    public String getPercent() {
+    public String getPercentStr() {
+        return percentStr;
+    }
+
+    public void setPercentStr(String percentStr) {
+        this.percentStr = percentStr;
+    }
+
+    public double getPercent() {
         return percent;
     }
 
-    public void setPercent(String percent) {
+    public void setPercent(double percent) {
         this.percent = percent;
     }
 }
