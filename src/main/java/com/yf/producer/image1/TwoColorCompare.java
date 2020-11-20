@@ -22,8 +22,8 @@ public class TwoColorCompare {
      */
     public static void main(String[] args) {
         int[] lab = new int[3];
-        int[] color1 = new int[]{125,103,89};
-        int[] color2 = new int[]{199,169,158};
+        int[] color1 = new int[]{51,68,55};
+        int[] color2 = new int[]{64,74,63};
 //        compareColors(r1,g1,b1,r2,g2,b2);
         double p = compareColors1(color1,color2);
         log.info("percent:{}",p);
@@ -286,14 +286,12 @@ public class TwoColorCompare {
         double KC = 1;
         double KH = 1;
 
-        double deltaE = Math.sqrt(
+        return Math.sqrt(
                 ((deltaLprime/(KL*SL)) * (deltaLprime/(KL*SL))) +
                         ((deltaCprime/(KC*SC)) * (deltaCprime/(KC*SC))) +
                         ((deltaHprime/(KH*SH)) * (deltaHprime/(KH*SH))) +
                         (RT * (deltaCprime/(KC*SC)) * (deltaHprime/(KH*SH)))
         );
-
-        return deltaE;
     }
 
 

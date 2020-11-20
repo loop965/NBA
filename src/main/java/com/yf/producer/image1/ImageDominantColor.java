@@ -33,16 +33,19 @@ public class ImageDominantColor {
        log.info("width:{},height:{},multi:{}",width,height,multi);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                int rgb = image.getRGB(i, j);
+                int pixel = image.getRGB(i, j);
+                if (i == 0){
+                    log.info("pixel:{},rgbArray:{}",pixel,getRGBArr(pixel));
+                }
 //                if (rgb == 0){
 //                    de++;
 //                    continue;
 //                }
-                Integer counter = colorMap.get(rgb);
+                Integer counter = colorMap.get(pixel);
                 if (counter == null) {
                         counter = 0;
                 }
-                colorMap.put(rgb, ++counter);
+                colorMap.put(pixel, ++counter);
             }
         }
 
@@ -67,7 +70,8 @@ public class ImageDominantColor {
         }
 
         List<Map.Entry<Integer, Integer>> list1 = combineColor(list);
-        while (list1.size() > 1){
+        // maybe endless loop
+        while (list1.size() > 1 ){
             list1 = combineColor(list1);
         }
 //        while (percent > 0.1){
@@ -131,7 +135,7 @@ public class ImageDominantColor {
     }
 
     public static void main(String[] args) throws IOException {
-        File file= new File("D:\\modoo-image\\TR170650OC111738D-RR17-12\\0f489289-9184-4f10-98c2-eeeef5d40e13.out.png");
+        File file= new File("D:\\modoo-image\\TR190690OC112979D-RR14-12\\784f36fd-39e9-46fb-94f7-b8a645170aa9.out.out.png");
 //        File file= new File("D:\\modoo-image\\TR190129TS113198A-YG12-12\\827636e1-138f-46a9-927d-0041dff99a98.out.png");
         BufferedImage img = ImageIO.read(file);
         List<MyColor> colorList = getHexColor(img);

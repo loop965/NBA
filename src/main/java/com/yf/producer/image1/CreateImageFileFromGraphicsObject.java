@@ -21,7 +21,7 @@ public class CreateImageFileFromGraphicsObject {
     public static void createImage(List<MyColor> colorList,String path,BufferedImage img) throws IOException {
         int size = colorList.size();
 
-        int width = 200 * (size+1);
+        int width = 200 * (size);
         int height = 250;
 
         // Constructs a BufferedImage of one of the predefined image types.
@@ -42,17 +42,17 @@ public class CreateImageFileFromGraphicsObject {
             String percent = colorList.get(i).getPercentStr();
             // create a circle with black
             g2d.setColor(new Color(rgb[0],rgb[1],rgb[2]));
-            g2d.fillOval((i+1) * 200, 0, 200, 200);
+            g2d.fillOval((i) * 200, 0, 200, 200);
 
             // create a string with yellow
             g2d.setColor(Color.red);
-            g2d.drawString(percent, 85 + (i + 1)* 200, 225);
+            g2d.drawString(percent, 85 + (i)* 200, 225);
         }
         // Disposes of this graphics context and releases any system resources that it is using.
         g2d.dispose();
 
         // Save as PNG
-        File file = new File(path + "myimage6.png");
+        File file = new File(path + "myimage7.png");
         ImageIO.write(bufferedImage, "png", file);
 
         // Save as JPEG
