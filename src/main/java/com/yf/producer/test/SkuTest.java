@@ -27,9 +27,9 @@ public class SkuTest {
         int cpu = Runtime.getRuntime().availableProcessors();
         int pageNo = 1;
         int pageSize = 10;
-        String serviceType = "sku.list.get";
+        String serviceType = "size.list.get";
         String result = Test3.sendRequest(serviceType,pageNo,pageSize);
-        String resultKey = "skuListGet";
+        String resultKey = "sizeListGet";
         JSONObject parseResult = Test3.parseResult(result,resultKey);
         System.out.println(parseResult);
         System.out.println();

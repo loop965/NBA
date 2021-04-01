@@ -15,7 +15,7 @@ public class ImageColor {
 
         public static void main(String args[])throws Exception {
             FileWriter writer = new FileWriter("D:\\image\\pixel_values1.txt");
-            //Reading the image
+            //  Reading the image
             File file= new File("D:\\image\\tigerrose\\38879\\ec828331d88542b2a82ad7c76e4b1421.jpg");
             BufferedImage img = ImageIO.read(file);
             for (int y = 0; y < img.getHeight(); y++) {
@@ -25,6 +25,7 @@ public class ImageColor {
                     //Creating a Color object from pixel value
                     Color color = new Color(pixel, true);
                     //Retrieving the R G B values
+                    System.out.println(color.toString());
                     int red = color.getRed();
                     int green = color.getGreen();
                     int blue = color.getBlue();

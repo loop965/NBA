@@ -52,7 +52,7 @@ public class CreateImageFileFromGraphicsObject {
         g2d.dispose();
 
         // Save as PNG
-        File file = new File(path + "myimage7.png");
+        File file = new File(path + "myimage10.png");
         ImageIO.write(bufferedImage, "png", file);
 
         // Save as JPEG

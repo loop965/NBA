@@ -1,10 +1,14 @@
 package com.yf.producer.image1;
 
+import cn.hutool.core.io.IoUtil;
+import com.alibaba.fastjson.JSONArray;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -24,29 +28,37 @@ public class ImageDominantColor {
     private static List<MyColor> myColorList = new ArrayList<>();
     private static int de = 0;
 
-    public static List<MyColor> getHexColor(BufferedImage image) {
+    public static List<MyColor> getHexColor(BufferedImage image) throws IOException {
+        de = 0;
         myColorList = new ArrayList<>();
         Map<Integer, Integer> colorMap = new HashMap<>(16);
         int height = image.getHeight();
         int width = image.getWidth();
         multi = height * width;
        log.info("width:{},height:{},multi:{}",width,height,multi);
+        FileWriter fileWriter = new FileWriter("E:/rgb.txt");
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 int pixel = image.getRGB(i, j);
-                if (i == 0){
-                    log.info("pixel:{},rgbArray:{}",pixel,getRGBArr(pixel));
+                int pixel1 = image.getRGB(width-i-1, height-j-1);
+                IOUtils.write(pixel1+" ",fileWriter);
+                if (i <10 ){
+                    log.info("i:{},j:{},pixel:{},rgbArray:{}",i,j,pixel,getRGBArr(pixel));
                 }
-//                if (rgb == 0){
-//                    de++;
-//                    continue;
+//                if (pixel == 16842752){
+//                    log.info("i:{},j:{}",i,j);
 //                }
+                if (pixel == 0|| pixel == 16843009 || pixel == 33686018){
+                    de++;
+                    continue;
+                }
                 Integer counter = colorMap.get(pixel);
                 if (counter == null) {
-                        counter = 0;
+                    counter = 0;
                 }
                 colorMap.put(pixel, ++counter);
             }
+            IOUtils.write("\n",fileWriter);
         }
 
         return getMostCommonColor(colorMap);
@@ -66,7 +78,7 @@ public class ImageDominantColor {
             String hex = "#" + Integer.toHexString(rgb[0])
                     + Integer.toHexString(rgb[1])
                     + Integer.toHexString(rgb[2]);
-            log.info("hex:{},rgb:{}",hex,rgb);
+            log.info("pixel:{},hex:{},rgb:{}",entry.getKey(),hex,rgb);
         }
 
         List<Map.Entry<Integer, Integer>> list1 = combineColor(list);
@@ -90,7 +102,7 @@ public class ImageDominantColor {
                 Map.Entry<Integer, Integer> nextEntry = list.get(j);
                 int[] rgb2 = getRGBArr(nextEntry.getKey());
                 double deltaE = TwoColorCompare.calculateDeltaE2000(TwoColorCompare.rgbToLab(rgb1),TwoColorCompare.rgbToLab(rgb2));
-                if (deltaE < 21){
+                if (deltaE < 15){
                     sum += nextEntry.getValue();
                 } else {
                     list1.add(nextEntry);
@@ -135,14 +147,14 @@ public class ImageDominantColor {
     }
 
     public static void main(String[] args) throws IOException {
-        File file= new File("D:\\modoo-image\\TR190690OC112979D-RR14-12\\784f36fd-39e9-46fb-94f7-b8a645170aa9.out.out.png");
-//        File file= new File("D:\\modoo-image\\TR190129TS113198A-YG12-12\\827636e1-138f-46a9-927d-0041dff99a98.out.png");
+        File file= new File("E:\\download\\13c6c0dfc7e048968659e230b0da6d31-removebg-preview.png");
+//        File file= new File("D:\\modoo-image\\TR170439SH111759A-BB11-12\\a76b1e51-03d6-47e9-b7e4-67ec18ff3b1c-out.png");
         BufferedImage img = ImageIO.read(file);
         List<MyColor> colorList = getHexColor(img);
         colorList.sort(Comparator.comparing(MyColor::getPercent).reversed());
         CreateImageFileFromGraphicsObject.createImage(colorList,"",img);
 
-        log.info("colorList:{}",colorList);
+        log.info("colorList:{}", JSONArray.toJSONString(myColorList));
         log.info("del:{}",de);
         log.info("sum:{}",colorList.stream().mapToDouble(MyColor::getPercent).sum());
     }

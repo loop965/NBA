@@ -20,7 +20,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -90,7 +94,7 @@ public class ProducerApplicationTests {
         System.out.println(brdProduct);
     }
 
-//    @Test
+    @Test
     public void colorTest(){
         List<BrdProduct> productList = modooMapper.selectBrdProductList();
         productList.forEach(brdProduct -> {
@@ -108,17 +112,37 @@ public class ProducerApplicationTests {
                     return;
                 }
             }
-            String picturePath = tempPath + "/" + UUID.fastUUID() + ".jpg";
+            String fileName = UUID.fastUUID().toString();
+            String picturePath = tempPath + "/" + fileName + ".jpg";
             File pictureFile = new File(picturePath);
             try {
                 HttpUtil.downloadFile(imagePath,pictureFile);
-                BufferedImage img = ImageIO.read(pictureFile);
+                String rembgPng =  tempPath + "/" + fileName + "-out.png";
+                Process process = Runtime.getRuntime().exec("rembg -o " + rembgPng + " " + picturePath);
+                printResults(process);
+                BufferedImage img = ImageIO.read(new File(rembgPng));
                 List<MyColor> colorList = ImageDominantColor.getHexColor(img);
+                colorList.sort(Comparator.comparing(MyColor::getPercent).reversed());
+                if (colorList.size() == 0){
+                    System.out.println(colorList);
+                    return;
+                }
                 CreateImageFileFromGraphicsObject.createImage(colorList,tempPath + "/",img);
+                log.info("colorList:{}",colorList);
+                log.info("sum:{}",colorList.stream().mapToDouble(MyColor::getPercent).sum());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
     }
+
+    public void printResults(Process process) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line = "";
+        while ((line = reader.readLine()) != null) {
+            System.out.println(line);
+        }
+    }
+
 
 }

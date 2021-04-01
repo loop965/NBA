@@ -22,8 +22,8 @@ public class TwoColorCompare {
      */
     public static void main(String[] args) {
         int[] lab = new int[3];
-        int[] color1 = new int[]{51,68,55};
-        int[] color2 = new int[]{64,74,63};
+        int[] color1 = new int[]{185,28,79};
+        int[] color2 = new int[]{252,89,161};
 //        compareColors(r1,g1,b1,r2,g2,b2);
         double p = compareColors1(color1,color2);
         log.info("percent:{}",p);
